@@ -1,5 +1,5 @@
 // Your Base32-encoded shared secret
-const TOTP_SHARED_SECRET = "GIO32ZTF6KSJKNBG";
+const TOTP_SHARED_SECRET = "GIO32ZTF6KSJKNBG"; // Example 
 
 // 1) Base32 decode
 const BASE32_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
