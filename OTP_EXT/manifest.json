@@ -1,11 +1,13 @@
 {
   "manifest_version": 3,
   "name": "TOTP Generator",
-  "version": "1.0",
-  "description": "Generate a 6-digit TOTP code from a shared secret",
+  "version": "1.1",
+  "description": "Generate 6-digit TOTP codes from one or more shared secrets",
+  "permissions": [
+    "storage"
+  ],
   "action": {
     "default_title": "TOTP",
     "default_popup": "popup.html"
-  },
-  "permissions": []
+  }
 }

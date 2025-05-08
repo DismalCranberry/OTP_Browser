@@ -1,68 +1,78 @@
-// Your Base32-encoded shared secret
-const TOTP_SHARED_SECRET = "GIO32ZTF6KSJKNBG"; // Example 
-
-// 1) Base32 decode
-const BASE32_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
-function base32Decode(input) {
-  let bits = 0, value = 0;
-  const output = [];
-  input = input.replace(/=+$/, "").toUpperCase();
-  for (const char of input) {
-    const idx = BASE32_CHARS.indexOf(char);
-    if (idx === -1) continue;
-    value = (value << 5) | idx;
-    bits += 5;
-    if (bits >= 8) {
-      bits -= 8;
-      output.push((value >>> bits) & 0xFF);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TOTP</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      width: 240px;
+      padding: 12px;
     }
-  }
-  return new Uint8Array(output);
-}
+    form {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 12px;
+    }
+    form input {
+      margin: 4px 0;
+      padding: 6px;
+      font-size: 0.9em;
+    }
+    form button {
+      padding: 6px;
+      font-size: 0.9em;
+      cursor: pointer;
+    }
+    #otp-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .otp-entry {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .otp-label {
+      font-weight: bold;
+      margin-right: 8px;
+      flex: 1;
+    }
+    .otp-code {
+      font-family: monospace;
+      cursor: pointer;
+      user-select: all;
+    }
+    .copy-feedback {
+      color: green;
+      font-size: 0.8em;
+      margin-left: 6px;
+    }
+    #countdown {
+      margin-top: 12px;
+      font-size: 0.8em;
+      color: #666;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <form id="add-form">
+    <input type="text" id="label-input" placeholder="Label (e.g. Gmail)" required>
+    <input type="text" id="secret-input" placeholder="Base32 Secret" required>
+    <button type="submit">Add OTP</button>
+  </form>
 
-// 2) Generate a TOTP code
-async function generateTOTP(secret) {
-  const keyBytes = base32Decode(secret);
-  const epoch = Math.floor(Date.now() / 1000);
-  const counter = Math.floor(epoch / 30);
+  <div id="otp-list">
+    <!-- dynamically filled -->
+  </div>
 
-  // 8-byte big‐endian counter
-  const buf = new ArrayBuffer(8);
-  const view = new DataView(buf);
-  // high bits (will be zero for time < 2^32*30)
-  view.setUint32(0, Math.floor(counter / 2 ** 32));
-  view.setUint32(4, counter >>> 0);
+  <div id="countdown">--s until refresh</div>
 
-  // import key & compute HMAC-SHA1
-  const cryptoKey = await crypto.subtle.importKey(
-    "raw", keyBytes, { name: "HMAC", hash: "SHA-1" }, false, ["sign"]
-  );
-  const hmac = await crypto.subtle.sign("HMAC", cryptoKey, buf);
-  const hash = new Uint8Array(hmac);
-
-  const offset = hash[hash.length - 1] & 0x0F;
-  const binary =
-    ((hash[offset]   & 0x7F) << 24) |
-    ((hash[offset+1] & 0xFF) << 16) |
-    ((hash[offset+2] & 0xFF) <<  8) |
-    ((hash[offset+3] & 0xFF)      );
-
-  const otp = (binary % 1_000_000).toString().padStart(6, "0");
-  return otp;
-}
-
-// 3) Update UI every second
-async function update() {
-  const codeEl      = document.getElementById("code");
-  const countdownEl = document.getElementById("countdown");
-  const now = Math.floor(Date.now() / 1000);
-  const secs = now % 30;
-  const left = 30 - secs;
-
-  codeEl.textContent      = await generateTOTP(TOTP_SHARED_SECRET);
-  countdownEl.textContent = `${left}s until refresh`;
-}
-
-// on load…
-update();
-setInterval(update, 1000);
+  <script src="popup.js"></script>
+</body>
+</html>
