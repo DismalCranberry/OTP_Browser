@@ -9,6 +9,18 @@
       width: 260px;
       padding: 12px;
     }
+    #add-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      user-select: none;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+    .hidden {
+      display: none;
+    }
     form {
       display: flex;
       flex-direction: column;
@@ -53,18 +65,6 @@
       font-size: 1em;
       cursor: pointer;
     }
-    #controls {
-      margin-top: 12px;
-      display: flex;
-      gap: 6px;
-      justify-content: space-between;
-    }
-    #controls button {
-      flex: 1;
-      padding: 6px;
-      font-size: 0.9em;
-      cursor: pointer;
-    }
     #countdown {
       margin-top: 12px;
       font-size: 0.8em;
@@ -74,22 +74,20 @@
   </style>
 </head>
 <body>
-  <form id="add-form">
-    <input type="text" id="label-input" placeholder="Label (e.g. Gmail)" required>
-    <input type="text" id="secret-input" placeholder="Base32 Secret" required>
-    <button type="submit">Add OTP</button>
-  </form>
-
-  <div id="otp-list"></div>
-
-  <div id="controls">
-    <button id="export-btn" type="button">Export Codes</button>
-    <button id="import-btn" type="button">Import Codes</button>
-    <input type="file" id="import-input" accept="application/json" style="display: none;">
+  <div id="add-header">
+    <span id="toggle-icon">▼</span>
+    <span>Add OTP</span>
+  </div>
+  <div id="add-container">
+    <form id="add-form">
+      <input type="text" id="label-input" placeholder="Label (e.g. Gmail)" required>
+      <input type="text" id="secret-input" placeholder="Base32 Secret" required>
+      <button type="submit">Add OTP</button>
+    </form>
   </div>
 
+  <div id="otp-list"></div>
   <div id="countdown">--s until refresh</div>
-
   <script src="popup.js"></script>
 </body>
 </html>
