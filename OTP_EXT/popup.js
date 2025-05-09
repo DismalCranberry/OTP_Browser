@@ -1,4 +1,4 @@
-// Base32 decode
+// Base32 decode (unchanged)
 const BASE32_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 function base32Decode(input) {
   let bits = 0, value = 0, output = [];
@@ -40,7 +40,7 @@ async function generateTOTP(secret) {
   return (binary % 1_000_000).toString().padStart(6, "0");
 }
 
-// storage helpers
+// chrome.storage helpers
 function getSecrets() {
   return new Promise(res =>
     chrome.storage.local.get({ secrets: [] }, data => res(data.secrets))
@@ -49,6 +49,16 @@ function getSecrets() {
 function saveSecrets(secrets) {
   return new Promise(res =>
     chrome.storage.local.set({ secrets }, () => res())
+  );
+}
+function getAddCollapsed() {
+  return new Promise(res =>
+    chrome.storage.local.get({ addCollapsed: false }, data => res(data.addCollapsed))
+  );
+}
+function saveAddCollapsed(val) {
+  return new Promise(res =>
+    chrome.storage.local.set({ addCollapsed: val }, () => res())
   );
 }
 
@@ -63,13 +73,26 @@ const countdownEl   = document.getElementById("countdown");
 
 let entries = [];
 
-// Toggle collapse/expand
-addHeader.addEventListener("click", () => {
+// Initialize collapsed state on load
+(async function restoreCollapsedState() {
+  const collapsed = await getAddCollapsed();
+  if (collapsed) {
+    addContainer.classList.add("hidden");
+    toggleIcon.textContent = "►";
+  } else {
+    addContainer.classList.remove("hidden");
+    toggleIcon.textContent = "▼";
+  }
+})();
+
+// Toggle collapse/expand and persist
+addHeader.addEventListener("click", async () => {
   const hidden = addContainer.classList.toggle("hidden");
   toggleIcon.textContent = hidden ? "►" : "▼";
+  await saveAddCollapsed(hidden);
 });
 
-// Build list, generate codes immediately, wire delete+copy
+// Build list, generate codes immediately, wire delete + copy
 async function initUI() {
   const secrets = await getSecrets();
   entries = [];
@@ -117,13 +140,13 @@ async function initUI() {
     entries.push({ secret, codeEl: cd });
   });
 
-  // Immediately generate and show codes
+  // Immediately generate and display each code
   await Promise.all(entries.map(async ({ secret, codeEl }) => {
     codeEl.textContent = await generateTOTP(secret);
   }));
 }
 
-// Refresh countdown & codes on the 30s mark
+// Refresh countdown & regenerate only on the 30s mark
 async function tick() {
   const now = Math.floor(Date.now() / 1000);
   const secs = now % 30;
@@ -135,7 +158,7 @@ async function tick() {
   }
 }
 
-// Handle new OTP adds
+// Handle new OTP submissions
 form.addEventListener("submit", async e => {
   e.preventDefault();
   const label  = labelInput.value.trim();
@@ -149,7 +172,7 @@ form.addEventListener("submit", async e => {
   await initUI();
 });
 
-// Kick things off
+// Initial render + start ticker
 initUI().then(() => {
   tick();
   setInterval(tick, 1000);
