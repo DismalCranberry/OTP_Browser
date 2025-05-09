@@ -32,7 +32,7 @@
       padding: 6px;
       border: 1px solid #ddd;
       border-radius: 4px;
-      cursor: pointer;            /* ← make the whole box look clickable */
+      cursor: pointer;
     }
     .otp-label {
       font-weight: bold;
@@ -51,7 +51,19 @@
       border: none;
       color: #c00;
       font-size: 1em;
-      cursor: pointer;           /* keep pointer on the delete button */
+      cursor: pointer;
+    }
+    #controls {
+      margin-top: 12px;
+      display: flex;
+      gap: 6px;
+      justify-content: space-between;
+    }
+    #controls button {
+      flex: 1;
+      padding: 6px;
+      font-size: 0.9em;
+      cursor: pointer;
     }
     #countdown {
       margin-top: 12px;
@@ -67,8 +79,17 @@
     <input type="text" id="secret-input" placeholder="Base32 Secret" required>
     <button type="submit">Add OTP</button>
   </form>
+
   <div id="otp-list"></div>
+
+  <div id="controls">
+    <button id="export-btn" type="button">Export Codes</button>
+    <button id="import-btn" type="button">Import Codes</button>
+    <input type="file" id="import-input" accept="application/json" style="display: none;">
+  </div>
+
   <div id="countdown">--s until refresh</div>
+
   <script src="popup.js"></script>
 </body>
 </html>
