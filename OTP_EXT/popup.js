@@ -1,4 +1,4 @@
-// Base32 decode (unchanged)
+// Base32 decode
 const BASE32_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 function base32Decode(input) {
   let bits = 0, value = 0, output = [];
@@ -40,7 +40,7 @@ async function generateTOTP(secret) {
   return (binary % 1_000_000).toString().padStart(6, "0");
 }
 
-// chrome.storage helpers
+// storage helpers
 function getSecrets() {
   return new Promise(res =>
     chrome.storage.local.get({ secrets: [] }, data => res(data.secrets))
@@ -52,21 +52,29 @@ function saveSecrets(secrets) {
   );
 }
 
-const otpListEl   = document.getElementById("otp-list");
-const countdownEl = document.getElementById("countdown");
-const form        = document.getElementById("add-form");
-const labelInput  = document.getElementById("label-input");
-const secretInput = document.getElementById("secret-input");
+const addHeader     = document.getElementById("add-header");
+const toggleIcon    = document.getElementById("toggle-icon");
+const addContainer  = document.getElementById("add-container");
+const form          = document.getElementById("add-form");
+const labelInput    = document.getElementById("label-input");
+const secretInput   = document.getElementById("secret-input");
+const otpListEl     = document.getElementById("otp-list");
+const countdownEl   = document.getElementById("countdown");
 
 let entries = [];
 
-// Build list, generate codes immediately, and wire up delete + copy
+// Toggle collapse/expand
+addHeader.addEventListener("click", () => {
+  const hidden = addContainer.classList.toggle("hidden");
+  toggleIcon.textContent = hidden ? "►" : "▼";
+});
+
+// Build list, generate codes immediately, wire delete+copy
 async function initUI() {
   const secrets = await getSecrets();
   entries = [];
   otpListEl.innerHTML = "";
 
-  // 1) Build DOM + entries array
   secrets.forEach(({ label, secret }, idx) => {
     const entryEl = document.createElement("div");
     entryEl.className = "otp-entry";
@@ -109,13 +117,13 @@ async function initUI() {
     entries.push({ secret, codeEl: cd });
   });
 
-  // 2) Immediately generate and display each code
+  // Immediately generate and show codes
   await Promise.all(entries.map(async ({ secret, codeEl }) => {
     codeEl.textContent = await generateTOTP(secret);
   }));
 }
 
-// Update countdown & regenerate only on the 30 s mark
+// Refresh countdown & codes on the 30s mark
 async function tick() {
   const now = Math.floor(Date.now() / 1000);
   const secs = now % 30;
@@ -127,10 +135,10 @@ async function tick() {
   }
 }
 
-// Add new secret
+// Handle new OTP adds
 form.addEventListener("submit", async e => {
   e.preventDefault();
-  const label = labelInput.value.trim();
+  const label  = labelInput.value.trim();
   const secret = secretInput.value.trim().replace(/\s+/g, "");
   if (!label || !secret) return;
   const all = await getSecrets();
@@ -141,9 +149,8 @@ form.addEventListener("submit", async e => {
   await initUI();
 });
 
-// Initial render + timer start
+// Kick things off
 initUI().then(() => {
-  // first tick to update countdown (codes already set)
   tick();
   setInterval(tick, 1000);
 });
