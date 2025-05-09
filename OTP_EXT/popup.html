@@ -6,7 +6,7 @@
   <style>
     body {
       font-family: sans-serif;
-      width: 240px;
+      width: 260px;
       padding: 12px;
     }
     form {
@@ -14,15 +14,10 @@
       flex-direction: column;
       margin-bottom: 12px;
     }
-    form input {
+    form input, form button {
       margin: 4px 0;
       padding: 6px;
       font-size: 0.9em;
-    }
-    form button {
-      padding: 6px;
-      font-size: 0.9em;
-      cursor: pointer;
     }
     #otp-list {
       display: flex;
@@ -30,27 +25,33 @@
       gap: 8px;
     }
     .otp-entry {
-      display: flex;
-      justify-content: space-between;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
       align-items: center;
+      gap: 6px;
       padding: 6px;
       border: 1px solid #ddd;
       border-radius: 4px;
+      cursor: pointer;            /* ← make the whole box look clickable */
     }
     .otp-label {
       font-weight: bold;
-      margin-right: 8px;
-      flex: 1;
     }
     .otp-code {
       font-family: monospace;
-      cursor: pointer;
       user-select: all;
     }
     .copy-feedback {
       color: green;
       font-size: 0.8em;
       margin-left: 6px;
+    }
+    .delete-btn {
+      background: transparent;
+      border: none;
+      color: #c00;
+      font-size: 1em;
+      cursor: pointer;           /* keep pointer on the delete button */
     }
     #countdown {
       margin-top: 12px;
@@ -66,13 +67,8 @@
     <input type="text" id="secret-input" placeholder="Base32 Secret" required>
     <button type="submit">Add OTP</button>
   </form>
-
-  <div id="otp-list">
-    <!-- dynamically filled -->
-  </div>
-
+  <div id="otp-list"></div>
   <div id="countdown">--s until refresh</div>
-
   <script src="popup.js"></script>
 </body>
 </html>
