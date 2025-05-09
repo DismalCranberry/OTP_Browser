@@ -7,19 +7,19 @@
     "storage"
   ],
   "icons": {
-    "16": "RandomCat.jpg",
-    "32": "RandomCat.jpg",
-    "48": "RandomCat.jpg",
-    "128": "RandomCat.jpg"
+    "16": "RandomCat.png",
+    "32": "RandomCat.png",
+    "48": "RandomCat.png",
+    "128": "RandomCat.png"
   },
   "action": {
     "default_title": "TOTP",
     "default_popup": "popup.html",
     "default_icon": {
-      "16": "RandomCat.jpg",
-      "32": "RandomCat.jpg",
-      "48": "RandomCat.jpg",
-      "128": "RandomCat.jpg"
+      "16": "RandomCat.png",
+      "32": "RandomCat.png",
+      "48": "RandomCat.png",
+      "128": "RandomCat.png"
     }
   }
 }
