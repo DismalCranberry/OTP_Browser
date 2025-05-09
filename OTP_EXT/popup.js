@@ -60,40 +60,36 @@ const secretInput = document.getElementById("secret-input");
 
 let entries = [];
 
-// Build the list, wire up delete + copy on the whole box
+// Build list, generate codes immediately, and wire up delete + copy
 async function initUI() {
   const secrets = await getSecrets();
   entries = [];
   otpListEl.innerHTML = "";
 
+  // 1) Build DOM + entries array
   secrets.forEach(({ label, secret }, idx) => {
     const entryEl = document.createElement("div");
     entryEl.className = "otp-entry";
 
-    // label
     const lbl = document.createElement("span");
     lbl.className = "otp-label";
     lbl.textContent = label;
 
-    // code placeholder
     const cd = document.createElement("span");
     cd.className = "otp-code";
-    cd.textContent = "------";
 
-    // delete button
     const deleteBtn = document.createElement("button");
     deleteBtn.className = "delete-btn";
     deleteBtn.textContent = "✕";
     deleteBtn.title = "Delete this OTP";
     deleteBtn.addEventListener("click", async e => {
-      e.stopPropagation();        // prevent also copying
+      e.stopPropagation();
       const all = await getSecrets();
       all.splice(idx, 1);
       await saveSecrets(all);
       await initUI();
     });
 
-    // clicking anywhere on the entry (except delete) copies the code
     entryEl.addEventListener("click", async () => {
       const code = cd.textContent;
       try {
@@ -112,9 +108,14 @@ async function initUI() {
     otpListEl.appendChild(entryEl);
     entries.push({ secret, codeEl: cd });
   });
+
+  // 2) Immediately generate and display each code
+  await Promise.all(entries.map(async ({ secret, codeEl }) => {
+    codeEl.textContent = await generateTOTP(secret);
+  }));
 }
 
-// Refresh countdown + regenerate codes on rollover
+// Update countdown & regenerate only on the 30 s mark
 async function tick() {
   const now = Math.floor(Date.now() / 1000);
   const secs = now % 30;
@@ -126,7 +127,7 @@ async function tick() {
   }
 }
 
-// handle new secrets
+// Add new secret
 form.addEventListener("submit", async e => {
   e.preventDefault();
   const label = labelInput.value.trim();
@@ -140,8 +141,9 @@ form.addEventListener("submit", async e => {
   await initUI();
 });
 
-// initial render + start timer
+// Initial render + timer start
 initUI().then(() => {
+  // first tick to update countdown (codes already set)
   tick();
   setInterval(tick, 1000);
 });
