@@ -1,93 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>TOTP</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      width: 260px;
-      padding: 12px;
-    }
-    #add-header {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      user-select: none;
-      font-weight: bold;
-      margin-bottom: 6px;
-    }
-    .hidden {
-      display: none;
-    }
-    form {
-      display: flex;
-      flex-direction: column;
-      margin-bottom: 12px;
-    }
-    form input, form button {
-      margin: 4px 0;
-      padding: 6px;
-      font-size: 0.9em;
-    }
-    #otp-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .otp-entry {
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      align-items: center;
-      gap: 6px;
-      padding: 6px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    .otp-label {
-      font-weight: bold;
-    }
-    .otp-code {
-      font-family: monospace;
-      user-select: all;
-    }
-    .copy-feedback {
-      color: green;
-      font-size: 0.8em;
-      margin-left: 6px;
-    }
-    .delete-btn {
-      background: transparent;
-      border: none;
-      color: #c00;
-      font-size: 1em;
-      cursor: pointer;
-    }
-    #countdown {
-      margin-top: 12px;
-      font-size: 0.8em;
-      color: #666;
-      text-align: center;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>TOTP</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            width: 260px;
+            padding: 12px;
+        }
+
+        #add-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            user-select: none;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 12px;
+        }
+
+        form input, form button {
+            margin: 4px 0;
+            padding: 6px;
+            font-size: 0.9em;
+        }
+
+        #otp-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .otp-entry {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 6px;
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .otp-label {
+            font-weight: bold;
+        }
+
+        .otp-code {
+            font-family: monospace;
+            user-select: all;
+        }
+
+        .copy-feedback {
+            color: green;
+            font-size: 0.8em;
+            margin-left: 6px;
+        }
+
+        .delete-btn {
+            background: transparent;
+            border: none;
+            color: #c00;
+            font-size: 1em;
+            cursor: pointer;
+        }
+
+        #countdown {
+            margin-top: 12px;
+            font-size: 0.8em;
+            color: #666;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-  <div id="add-header">
+<div id="add-header">
     <span id="toggle-icon">▼</span>
     <span>Add OTP</span>
-  </div>
-  <div id="add-container">
+</div>
+<div id="add-container">
     <form id="add-form">
-      <input type="text" id="label-input" placeholder="Label (e.g. Gmail)" required>
-      <input type="text" id="secret-input" placeholder="Base32 Secret" required>
-      <button type="submit">Add OTP</button>
-    </form>
-  </div>
+        <label for="label-input" class="visually-hidden">
+            Account name
+        </label>
+        <input
+                type="text"
+                id="label-input"
+                placeholder="Label (e.g. Gmail)"
+                required
+        >
 
-  <div id="otp-list"></div>
-  <div id="countdown">--s until refresh</div>
-  <script src="popup.js"></script>
+        <label for="secret-input" class="visually-hidden">
+            Base32 TOTP secret
+        </label>
+        <input
+                type="text"
+                id="secret-input"
+                placeholder="Base32 Secret"
+                required
+        >
+
+        <button type="submit">Add OTP</button>
+    </form>
+
+</div>
+
+<div id="otp-list"></div>
+<div id="countdown">--s until refresh</div>
+<script src="popup.js"></script>
 </body>
 </html>
