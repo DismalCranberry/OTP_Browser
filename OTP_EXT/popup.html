@@ -36,6 +36,10 @@
             font-size: 0.9em;
         }
 
+        #sort-btn {
+            display: none; /* No longer needed */
+        }
+
         #otp-list {
             display: flex;
             flex-direction: column;
@@ -44,17 +48,23 @@
 
         .otp-entry {
             display: grid;
-            grid-template-columns: auto 1fr auto;
+            grid-template-columns: auto 1fr auto auto;
             align-items: center;
             gap: 6px;
             padding: 6px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            cursor: pointer;
+            cursor: move;
+            background-color: #fafafa;
+        }
+
+        .otp-entry.drag-over {
+            border: 2px dashed #999;
         }
 
         .otp-label {
             font-weight: bold;
+            user-select: none;
         }
 
         .otp-code {
@@ -68,12 +78,20 @@
             margin-left: 6px;
         }
 
-        .delete-btn {
+        .rename-btn, .delete-btn {
             background: transparent;
             border: none;
-            color: #c00;
             font-size: 1em;
             cursor: pointer;
+            padding: 2px 4px;
+        }
+
+        .rename-btn {
+            color: #06c;
+        }
+
+        .delete-btn {
+            color: #c00;
         }
 
         #countdown {
@@ -85,39 +103,32 @@
     </style>
 </head>
 <body>
-<div id="add-header">
-    <span id="toggle-icon">▼</span>
-    <span>Add OTP</span>
-</div>
-<div id="add-container">
-    <form id="add-form">
-        <label for="label-input" class="visually-hidden">
-            Account name
-        </label>
-        <input
+    <div id="add-header">
+        <span id="toggle-icon">▼</span>
+        <span>Add OTP</span>
+    </div>
+    <div id="add-container">
+        <form id="add-form">
+            <label for="label-input" class="visually-hidden">Account name</label>
+            <input
                 type="text"
                 id="label-input"
                 placeholder="Label (e.g. Gmail)"
                 required
-        >
-
-        <label for="secret-input" class="visually-hidden">
-            Base32 TOTP secret
-        </label>
-        <input
+            >
+            <label for="secret-input" class="visually-hidden">Base32 TOTP secret</label>
+            <input
                 type="text"
                 id="secret-input"
                 placeholder="Base32 Secret"
                 required
-        >
+            >
+            <button type="submit">Add OTP</button>
+        </form>
+    </div>
 
-        <button type="submit">Add OTP</button>
-    </form>
-
-</div>
-
-<div id="otp-list"></div>
-<div id="countdown">--s until refresh</div>
-<script src="popup.js"></script>
+    <div id="otp-list"></div>
+    <div id="countdown">--s until refresh</div>
+    <script src="popup.js"></script>
 </body>
 </html>
